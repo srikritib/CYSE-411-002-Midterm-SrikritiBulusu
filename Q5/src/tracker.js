@@ -74,6 +74,7 @@ async function fetchIncidents() {
 
         const data = await res.json();
         return data;
+        
     } catch (err) {
         console.error("Failed to fetch incidents:", err);
         return [];
@@ -85,12 +86,17 @@ async function fetchIncidents() {
 // ------------------------------------------------------------
 function renderIncidents(incidents) {
     const container = document.getElementById("incident-list");
+    const item = document.createElement(container);
+
 
     if (!container) {
         return;
     }
 
     container.textContent = "";
+    const title.textContent = "";
+    const severity.textContent = "";
+    
 
     if (!Array.isArray(incidents)) {
         const msg = document.createElement("p");
@@ -133,7 +139,6 @@ function renderIncidents(incidents) {
 
     container.appendChild(list);
 }
-
 // ------------------------------------------------------------
 // Optional filter helper
 // ------------------------------------------------------------
