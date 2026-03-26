@@ -18,8 +18,12 @@ function loadSession() {
 
 
 function renderStatusMessage(containerElement, message) {
-    containerElement.innerHTML = "<p>" + message + "</p>";   // UNSAFE
+
+    const li = document.createElement(message);
+    containerElement.textContent(li);
+    //containerElement.innerHTML = "<p>" + message + "</p>";   // UNSAFE
 }
+
 
 
 
@@ -30,6 +34,17 @@ function renderStatusMessage(containerElement, message) {
 
 
 function sanitizeSearchQuery(input) {
+    if (typeof input !== "string") {
+        return null;
+    }
+
+    input = input.slice(0,40);
+    input = input.replace(/[^A-Za-z0-9 _-]/g, "_");
+
+    if (input.length === 0) {
+        return null;
+    }
+
     // TODO: Implement sanitization.
     // Requirements:
     //   - Allow only letters, digits, spaces, hyphens, underscores
@@ -42,7 +57,7 @@ function sanitizeSearchQuery(input) {
 function performSearch(query) {
     const sanitized = sanitizeSearchQuery(query);
     const label = document.getElementById("search-label");
-    label.innerHTML = "Showing results for: " + sanitized;  // UNSAFE
+    query.textContent(label);
 }
 
 
@@ -53,12 +68,23 @@ function performSearch(query) {
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    // Load session
-    const session = loadSession();
+   //Didn't understand which section to modify for Q4.C
+   
+   const session = loadSession();
+   try {
     if (session) {
+        if (displayName.length === 0 || userId.length === 0 || if role.length === 0) {
+            return null;
+        }
         document.getElementById("welcome-msg").textContent =
-            "Welcome, " + session.displayName;
+        "Welcome, " + session.displayName;
     }
+
+   }
+   catch (error) {
+    return null;
+   }
+    
 
     // Simulate receiving a profile card with a status message
     // In production this would come from an API response.
@@ -97,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
         statusContainer.className = "status";
 
         // Q4.A – fix this call
-        renderStatusMessage(statusContainer, profile.status);
+        renderStatusMessage(statusContainer, profile.div);
 
         card.appendChild(nameEl);
         card.appendChild(deptEl);
