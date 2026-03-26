@@ -21,10 +21,20 @@ let currentFilter = "all";
 
 
 function loadDashboardState() {
-    const raw   = localStorage.getItem("dashboardState");
-    const state = JSON.parse(raw);             // No try/catch
-    currentFilter = state.filter;              // No enum validation
-    applyFilter(currentFilter);
+    try {
+        const raw   = localStorage.getItem("dashboardState");
+        if (!raw) {
+            return {filter : all};
+        }
+        const state = JSON.parse(raw);             // No try/catch
+        currentFilter = state.filter;              // No enum validation
+        applyFilter(currentFilter);
+
+    }
+    catch (error) {
+
+    }
+    
 }
 
 
@@ -37,7 +47,10 @@ function loadDashboardState() {
 
 function saveDashboardState() {
     const filterInput = document.getElementById("filter-select");
-    const filter      = filterInput.value;    // Not validated before storing
+    if (!filter) {
+        return {filter : all};
+    }
+    const filter = filterInput.value;    // Not validated before storing
     localStorage.setItem("dashboardState", JSON.stringify({ filter: filter }));
     currentFilter = filter;
 }
@@ -55,37 +68,39 @@ function saveDashboardState() {
 
 
 async function fetchIncidents() {
-    const res  = fetch("/api/incidents");      // Missing await
-    const data = res.json();                   // Missing await; res is a Promise
+
+    try {
+        const res  = await fetch("/api/incidents");      // Missing await
+        if (!res.ok) {
+            return Error('HTTP error: ' + response.status)
+    }
+    const data = await res.json();                   
     return data;
+
+    }
+    catch (error) {
+        return "Non-ok response";
+    }
+    
 }
 
-
-
-//  Q5.B  Render Incidents
-//  Builds the incident list in the dashboard.
-//  VULNERABILITY 1: Incident data (title, severity) is inserted
-//    via innerHTML – a stored XSS risk if the API returns
-//    attacker-controlled content.
-//  VULNERABILITY 2: No validation of the incidents array or
-//    individual incident fields before rendering.
 
 
 function renderIncidents(incidents) {
     const container = document.getElementById("incident-list");
-    container.innerHTML = "";                  // Clear previous results
+    container.textContent = "";                  // Clear previous results
 
     incidents.forEach(function (incident) {
         const item = document.createElement("li");
         // UNSAFE – directly inserts API response as HTML
-        item.innerHTML =
-            "<strong>" + incident.title + "</strong>" +
-            " <span class='severity severity-" + incident.severity + "'>" +
-            incident.severity + "</span>";
+        if (!item) {
+            return "warning";
+        }
+
+        item.textContent(li);
         container.appendChild(item);
     });
 }
-
 
 
 //  Filter Helper (provided – do not modify)
